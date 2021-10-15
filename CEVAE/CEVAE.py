@@ -168,11 +168,11 @@ class CEVAE_model(nn.Module):
         self.p_z_dist = normal.Normal(torch.zeros(args.zDim).to(args.device), torch.ones(args.zDim).to(args.device))
 
     def forward(self, n_samples_z, device, batch_data, loss_dict, cat_bin_dict, eval=False, reconstruct=False, switch_a=False):
-        y_batch, x_batch_con, x_batch_bin, r_batch, b_batch, a_batch = batch_data
+        y_batch, l_batch, s_batch_bin, s_batch_con, f_batch, e_batch, t_batch, a_batch = batch_data
         # INFER distribution over z
         # torch.cat: concatenate tensors: over dimension 1 --> per participant
         # q(z|a, b, x, r)
-        z_infer = self.q_z.forward(observations=torch.cat((x_batch_con, x_batch_bin, r_batch, b_batch, a_batch), 1))
+        z_infer = self.q_z.forward(observations=torch.cat((y_batch, l_batch, t_batch, e_batch, f_batch, a_batch), 1))
 
 
         #call other forward functions
