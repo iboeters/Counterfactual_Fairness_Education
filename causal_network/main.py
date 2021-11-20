@@ -9,7 +9,6 @@ from sklearn.model_selection import train_test_split
 from collections import defaultdict
 from argparse import ArgumentParser
 from get_data import get_data, get_train_test_split
-from fairness_unawareness import fairness_unawareness
 from counterfactual_fairness import counterfactual_fairness
 from train_CEVAE import train_CEVAE
 
@@ -36,7 +35,7 @@ args = parser.parse_args()
 # pd.set_option('max_columns', 999)
 
 # check if cuda is available; if cuda => run on gpu
-device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
+args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
 
 # load data -------------------------------------------------------------
 data = get_data(args.dataset)

@@ -7,7 +7,7 @@ import matplotlib.font_manager
 import seaborn as sns
 
 def plot_loss(args, train_loss_dict, test_loss_dict):
-    # save train and test total loss development
+    # plot train and test total loss development
     plt.figure(figsize=(18, 12))
     plt.rcParams["font.family"] = "serif"
     plt.plot(train_loss_dict['train_loss'], label='train', color='green')
@@ -20,7 +20,7 @@ def plot_loss(args, train_loss_dict, test_loss_dict):
     plt.savefig('output/loss_develop_' + args.filename + '.pdf')
     plt.close()
 
-    # save train and test loss development of separate loss components
+    # plot train and test loss development of separate loss components
     plt.figure(figsize=(18, 12))
     subindex = 1
     x_axis = 0

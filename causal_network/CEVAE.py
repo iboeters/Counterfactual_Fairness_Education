@@ -295,7 +295,7 @@ class CEVAE_model(nn.Module):
         loss_reg = (self.p_u.log_prob(u_infer_sample) - u_infer.log_prob(u_infer_sample)).sum(axis=1)
         train_loss_dict['Regularization'].append(loss_reg.mean().detach().cpu().float())
 
-        # total loss VAE: negative log likelihood + regularizer
+        # calculate total loss VAE: negative log likelihood + regularizer
         loss_rec = loss_l + loss_s1 + loss_s2 + loss_t + loss_e + loss_f + loss_y
         loss_total = -torch.mean(loss_rec + loss_reg)
         train_loss_dict['Total loss'].append(loss_total.cpu().detach().numpy())

@@ -12,11 +12,10 @@ from collections import defaultdict
 from CEVAE import CEVAE_model
 from plot_results import plot_conf_matrix, plot_diff
 
-# Model class for auxiliary model
+# model class auxiliary model
 class aux_m(nn.Module):
     def __init__(self, dim_in, dim_h, dim_out):
         super().__init__()
-        # init network
         self.lin1 = nn.Linear(dim_in, dim_h)
         self.lin2 = nn.Linear(dim_h, dim_out)
         self.softmax = nn.Softmax(dim=1)
@@ -58,7 +57,7 @@ def counterfactual_fairness(args, train_data, test_data):
         for combination in path_combinations:
             optimizer[combination] = torch.optim.RMSprop(AUX[combination].parameters(), lr=args.lr)
 
-        # Maintain loss development for monitoring
+        # save loss development
         train_loss_dict = defaultdict(list)
 
         # training loop
@@ -68,7 +67,7 @@ def counterfactual_fairness(args, train_data, test_data):
             batch_data = [torch.Tensor(i[batch_index]).to(args.device) for i in train_data]
             a_batch, y_batch, s_batch_con, s_batch_bin, l_batch, t_batch, e_batch, f_batch = batch_data
 
-            # INFER distribution over u, using inference network of CEVAE
+            # infer distribution over u, using inference network of CEVAE
             u_infer = CEVAE.q_u.forward(x=torch.cat((l_batch, t_batch, e_batch, f_batch), 1))
             u_infer_sample = u_infer.sample().detach()
 
@@ -93,7 +92,7 @@ def counterfactual_fairness(args, train_data, test_data):
         batch_data = [torch.Tensor(i).to(args.device) for i in test_data]
         a_batch, y_batch, s_batch_con, s_batch_bin, l_batch, t_batch, e_batch, f_batch = batch_data
 
-        # INFER distribution over u, using inference network of CEVAE
+        # infer distribution over u, using inference network of CEVAE
         u_infer = CEVAE.q_u.forward(x=torch.cat((l_batch, t_batch, e_batch, f_batch), 1))
         u_infer_sample = u_infer.sample().detach()
                
@@ -103,13 +102,13 @@ def counterfactual_fairness(args, train_data, test_data):
         aux_output['usltef'] = AUX['usltef'].forward(torch.cat((u_infer_sample, s_batch_con, s_batch_bin, l_batch, t_batch, e_batch, f_batch), 1))
         aux_output['uasltef'] = AUX['uasltef'].forward(torch.cat((u_infer_sample, a_batch, s_batch_con, s_batch_bin, l_batch, t_batch, e_batch, f_batch), 1))
 
-        # masks
+        # mask for ethnicity groups
         mask_a0 = (a_batch[:,0] == 1)
         mask_a1 = (a_batch[:,1] == 1)
         mask_a2 = (a_batch[:,2] == 1)
         mask_a3 = (a_batch[:,3] == 1)
 
-        # Save accuracy
+        # save accuracy
         for combination in path_combinations:
             # calculate accuracy of algorithm, select top 2
             y_batch_max = torch.argmax(y_batch, dim=1, keepdim=True)
@@ -154,7 +153,7 @@ def counterfactual_fairness(args, train_data, test_data):
             print("accuracy a3:\t", accuracy_a3)
 
         # Test counterfactual fairness CEVAE ------------------------------------       
-        # a0 -> a1
+        # a0
         l_out = CEVAE.p_l_au.forward(u_infer_sample[mask_a0], a_batch[mask_a0])
         l_sample = l_out.sample().detach()
         s_bin_out, s_con_out = CEVAE.p_s_a.forward(a_batch[mask_a0], a_batch[mask_a0])
@@ -192,7 +191,6 @@ def counterfactual_fairness(args, train_data, test_data):
         diff_pos = torch.pow(diff, 2)
         diff_pos = torch.sqrt(diff_pos.float())
         diff_mean = torch.mean(diff_pos.float()).detach().cpu().numpy()
-
         diff_array = diff.detach().cpu().numpy()
         count_diff[rep_i].append(diff_array)
 
