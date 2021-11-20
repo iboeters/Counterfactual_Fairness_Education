@@ -13,7 +13,7 @@ from counterfactual_fairness import counterfactual_fairness
 from train_CEVAE import train_CEVAE
 
 # to run:
-# python main.py -filename=test -model_name=test -nIter_CEVAE=100 -nIter=100 -evalIter=100 -uDim=5 -rep=1
+# python main.py -filename=test -model_name=test -nIter_CEVAE=15000 -nIter=1000 -evalIter=100 -uDim=5 -rep=10
 
 parser = ArgumentParser()
 parser.add_argument('-lr', type=float, default=0.0005)
