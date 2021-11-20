@@ -1,5 +1,6 @@
 import pandas as pd
 import numpy as np
+import datetime
 
 def add_language_level(df):
     df.loc[(df['WPOTAALTV'] == 1), 'WPOTAALTV'] = 0
@@ -144,6 +145,15 @@ def handle_NaNs(df_clean):
         print(df_clean.loc[:, ['PERCBESTINKO', 'OPLNIVMA', 'OPLNIVPA', 'SECMMA', 'SECMPA', 'WOZ']].isna().sum(axis=1).value_counts(), file=f)
         print(df_clean.shape, file=f)
 
+def add_age(df):
+    df['birth_date'] = np.nan
+    df['selection_date'] = np.nan
+    df['age'] = np.nan
+    df['birth_date'] = df.apply(lambda x: datetime.date(int(x['YYYY']), int(x['MM']), int(x['DD'])), axis=1)
+    df['selection_date'] = df.apply(lambda x: datetime.date(int(x['SCHOOLYEAR']) + 1, 3, 1), axis=1)
+    df['age'] = df.apply(lambda x: (x['selection_date'] - x['birth_date']).days, axis=1)
+    return df
+        
 def clean_data(df):
     df = add_ethnicity(df)
     df = add_advice_teacher(df)
@@ -160,11 +170,16 @@ def clean_data(df):
         print("All NaNs before SO selection:", file=f)
         print(df[['GENDER', 'ETHN', 'WPOTAALLV', 'WPOTAALTV', 'ADV_TEACH', 'ADV_TEST', 'ADV_FINAL', 'LEVEL3', 'WOZ', 'PERCBESTINKO', 'OPLNIVMA', 'OPLNIVPA', 'SECMMA', 'SECMPA', 'VOLEERJAAR']].isna().sum(), file=f)
         print(df.shape, file=f)
-    df_clean = df[['GENDER', 'ETHN', 'WPOTAALLV', 'WPOTAALTV', 'ADV_TEACH', 'ADV_TEST', 'ADV_FINAL', 'LEVEL3', 'WOZ', 'PERCBESTINKO', 'OPLNIVMA', 'OPLNIVPA', 'SECMMA', 'SECMPA', 'VOLEERJAAR', 'YYYY', 'MM', 'DD']].copy()
+    # calculate not in year 3 after 3 years percentage
+#     print(df.shape[0]) # 531481
+#     print(df['VOLEERJAAR'].value_counts()) # 495775 in year 3
+
+    df_clean = df[['GENDER', 'ETHN', 'WPOTAALLV', 'WPOTAALTV', 'ADV_TEACH', 'ADV_TEST', 'ADV_FINAL', 'LEVEL3', 'WOZ', 'PERCBESTINKO', 'OPLNIVMA', 'OPLNIVPA', 'SECMMA', 'SECMPA', 'VOLEERJAAR', 'YYYY', 'MM', 'DD', 'SCHOOLYEAR']].copy()
     df_clean = df_clean.drop(df_clean[(df_clean.VOLEERJAAR == 1) | (df_clean.VOLEERJAAR == 2) | (df_clean.VOLEERJAAR == 4) | (df_clean.VOLEERJAAR == 5) | (df_clean.VOLEERJAAR == 6) | (df_clean.VOLEERJAAR == 9)].index)
     df_clean = df_clean.drop(df_clean[df_clean.ADV_TEACH == 0].index)
     df_clean = df_clean.drop(df_clean[df_clean.ADV_TEST == 0].index)
     df_clean = df_clean.drop(df_clean[df_clean.ADV_FINAL == 0].index)
     df_clean = df_clean.drop(df_clean[df_clean.LEVEL3 == 0].index)
     handle_NaNs(df_clean)
+    df_clean = add_age(df_clean)
     return df_clean

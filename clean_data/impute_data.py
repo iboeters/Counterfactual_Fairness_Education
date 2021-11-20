@@ -3,6 +3,7 @@ import numpy as np
 import os
 import sys
 import miceforest as mf
+import statistics
 
 def visualize_results(kernelMeanMatch):
     print(kernelMeanMatch)
@@ -63,11 +64,15 @@ def impute_data(df_clean):
         print("All NaNs when only impute education parents:", file=f)
         print(df_clean.isna().sum(), file=f)
         print(df_clean.shape, file=f)
-    df_stats = df_clean[['YYYY', 'MM', 'DD']].copy()
+    print("age statistics:")
+    print(df_clean.shape)
+    print(df_clean['age'].mean() / 365.25)
+    print(statistics.stdev(df_clean['age']) / 365.25)
+    df_stats = df_clean[['age']].copy()
     df_stats.to_csv('../output/df_stats.csv')
     df_clean = df_clean[['GENDER', 'ETHN', 'WPOTAALLV', 'WPOTAALTV', 'ADV_TEACH', 'ADV_TEST', 'ADV_FINAL', 'LEVEL3', 'WOZ', 'PERCBESTINKO', 'OPLNIVMA', 'OPLNIVPA', 'SECMMA', 'SECMPA']].copy()
     df_clean = df_clean.astype({'OPLNIVMA': 'category', 'OPLNIVPA' : 'category', 'SECMMA': 'category', 'SECMPA': 'category'})
     df_clean.to_csv('../output/out.csv')
-    new_data = df_clean.copy()
-#     new_data = imputation(df_clean_2)
-    return new_data
+    # uncomment for compute in this file instead of python notebook file
+    # df_clean = imputation(df_clean)
+    return df_clean
