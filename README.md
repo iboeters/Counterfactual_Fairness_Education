@@ -20,5 +20,5 @@ Subdirectory clean_data:
 ``main.py``
 
 Subdirectory causal_network:
-s
+
 ``main.py [-lr LR] [-hDim HDIM] [-uDim UDIM] [-rep REP] [-nIter_CEVAE NITER_CEVAE] [-nIter NITER] [-batchSize BATCHSIZE] [-nSamplesU NSAMPLESU] [-evalIter EVALITER] [-dataset DATASET] [-device DEVICE] [-test_size TEST_SIZE] [-filename FILENAME] [-model_name MODEL_NAME]``
