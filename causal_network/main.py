@@ -32,8 +32,6 @@ parser.add_argument('-filename', type=str, default='x')
 parser.add_argument('-model_name', type=str, default='x')
 args = parser.parse_args()
 
-# pd.set_option('max_columns', 999)
-
 # check if cuda is available; if cuda => run on gpu
 args.device = torch.device('cuda' if torch.cuda.is_available() else 'cpu') 
 
